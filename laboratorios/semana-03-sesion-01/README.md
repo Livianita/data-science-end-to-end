@@ -18,17 +18,17 @@ A partir de la lectura previa:
 
 **Según el artículo, ¿qué diferencia hay entre una imagen de Docker y un contenedor?**
 
-_(tu respuesta)_
+Una imagen es una plantilla que contiene el entorno y los archivos necesarios para ejecutar una aplicación. Un contenedor es una instancia creada a partir de esa imagen. Puedo crear varios contenedores usando la misma imagen.
 
 **¿Qué captura Docker, además de las librerías de Python, que un `requirements.txt` por sí solo no captura?**
 
-_(tu respuesta)_
+El Dockerfile permite definir la versión de Python, el entorno base del sistema operativo, las dependencias del sistema, la carpeta de trabajo, el código y el comando de ejecución. Un requirements.txt solo especifica dependencias de Python. Los contenedores comparten el kernel del entorno donde se ejecutan.
 
 ## Pregunta de apertura
 
 ¿Por qué un notebook que corre perfecto en mi laptop podría fallar por completo en la tuya, aunque ambos tengan el mismo código?
 
-_(tu respuesta)_
+El mismo notebook puede fallar en otra máquina por diferencias en las versiones de Python y sus librerías, dependencias del sistema, rutas, datos disponibles o variables de entorno. En este laboratorio observé que mi máquina y Docker tenían versiones distintas de Python y pandas.
 
 ## Ejercicio 1: la imagen de un script con pandas y datos
 
@@ -42,23 +42,24 @@ docker run procesar-ventas
 
 **Respuesta 1, antes de ver la solución:** el Dockerfile fija `python:3.11-slim` y no solo `python`. ¿Qué cambiaría en un año si dijera solo `python`?
 
-_(tu respuesta)_
+Si utilizara solo python, Docker usaría la etiqueta latest, que con el tiempo podría apuntar a otra versión de Python y afectar la compatibilidad del código. python:3.11-slim mantiene la versión principal y secundaria y usa una variante reducida. Sin embargo, esa etiqueta también puede recibir actualizaciones; no fija una imagen exacta.
 
 **Respuesta 2 (TODO 1):** si cambias una línea de `procesar.py` y vuelves a construir, ¿qué pasos se repiten? ¿Cómo reordenarías las líneas para que `pip install` no se repita?
 
-_(tu respuesta)_
+Con COPY . . antes de pip install, modificar procesar.py invalida la capa de copia y obliga a ejecutar nuevamente la instalación. Lo resolví copiando primero requirements.txt, instalando las dependencias y copiando después el script. Al cambiar solo el código, pip install apareció como CACHED
 
 **Respuesta 3 (TODO 2):** `docker run procesar-ventas` termina sin imprimir nada y sin error. ¿Qué le falta a la imagen?
 
-_(tu respuesta)_
+Faltaba definir el comando por defecto para ejecutar el script. Agregué CMD ["python", "procesar.py"]. Antes de ese cambio, ejecutar el contenedor no iniciaba nuestro procesamiento.
 
 **Respuesta 4 (TODO 3, el comando de `docker run`):** con los TODO 1 y 2 resueltos, la imagen solo copia `procesar.py`. ¿Encuentra `datos/ventas.csv` al correr? Y si lo encontrara, ¿dónde quedaría `resumen_ventas.csv` cuando el contenedor termina?
 
-_(tu respuesta)_
+Como la imagen solo copia el script y requirements.txt, no encuentra datos/ventas.csv sin un montaje. Si el archivo de entrada estuviera dentro del contenedor, el resumen también se guardaría allí. Permanecería al detener el contenedor, pero se perdería al eliminarlo. Con un montaje puedo guardar el resultado directamente en mi máquina.
 
 **Lo que confirmó la salida, TODO por TODO:**
 
 _(anota el Dockerfile final, el comando con `-v`, y lo que no esperabas)_
+Comprobé que las dependencias se reutilizan desde la caché cuando solo cambia el código. Después de agregar CMD, el script arrancó, pero produjo FileNotFoundError porque faltaban los datos. Al montar la carpeta datos, generó el resumen en mi máquina: monitor 409.99, teclado 117.5 y mouse 33.5. Me llamó la atención que los archivos locales no están disponibles automáticamente dentro del contenedor.
 
 ## Durante el ConcepTest
 
@@ -89,15 +90,14 @@ bash comprobar.sh
 
 **Respuesta 1:** ¿qué comando usaste en el TODO 5? ¿Qué significa, entonces, que `CMD` sea el comando "por defecto"?
 
-_(tu respuesta)_
+CMD es el comando por defecto porque se ejecuta cuando no proporciono otro después del nombre de la imagen. En esta ejecución lo reemplacé por python contar_filas.py, sin modificar el Dockerfile ni reconstruir la imagen.
 
 **Respuesta 2:** si borras `datos/clientes_por_ciudad.csv` de tu carpeta y corres la imagen otra vez sin `-v`, ¿qué pasa?
 
-_(tu respuesta)_
-
+Si borro el resultado local y ejecuto la imagen sin -v, el script no encuentra datos/clientes.csv, porque no copiamos los datos a la imagen. La ejecución falla y no vuelve a crear el resumen en mi carpeta local.
 **Si terminas antes:** `contar_filas.py` no usa pandas. ¿Valdría la pena una imagen aparte para él, sin `pip install`? ¿Qué ganarías y qué perderías?
 
-_(tu respuesta)_
+Una imagen separada para contar_filas.py podría ser más pequeña, tener menos dependencias y evitar instalar pandas. A cambio, tendría que mantener y construir dos imágenes. Para este ejercicio resulta práctico usar una sola imagen con ambos scripts; separarlas tendría más sentido si se desplegaran de forma independiente.
 
 ## Ejercicio 3: el Dockerfile de tu propio proyecto
 
@@ -107,7 +107,7 @@ Usa el mismo patrón de los Ejercicios 1 y 2, aplicado al ambiente de tu proyect
 
 Lista las librerías externas que tu proyecto necesita (lo que normalmente instalarías con `pip install`). Si todavía no tienes un `requirements.txt`, créalo ahora con esa lista.
 
-_(tu lista de dependencias)_
+Para esta primera exploración de Cfavorita necesito pandas==2.2.2. argparse y pathlib forman parte de la biblioteca estándar de Python y no requieren instalación con pip. El script lee stores.csv y genera un diagnóstico por columna.
 
 ### Paso 2: completa el Dockerfile (10 minutos)
 
@@ -122,7 +122,8 @@ docker run <con -v si tu proyecto usa datos> <nombre-de-tu-proyecto>
 
 Confirma que el resultado dentro del contenedor coincide con correr tu código directamente en tu máquina.
 
-_(qué verificaste, y si encontraste alguna diferencia)_
+
+Ejecuté el mismo script con los mismos datos en mi máquina y en Docker. Los conteos de valores distintos y faltantes coincidieron. Las columnas city, state y type aparecieron como object dentro del contenedor y como str en el ambiente local. Los ambientes usan versiones diferentes: Python 3.11 y pandas 2.2.2 en Docker, frente a Python 3.14.7 y pandas 3.0.5 en mi máquina. Los archivos de diagnóstico no fueron idénticos, aunque las métricas coincidieron.
 
 ## Antes de la próxima sesión
 
@@ -130,4 +131,4 @@ Ya tienes tu proyecto empaquetado en una imagen reproducible.
 
 Pregunta: ¿qué pasa si necesitas provisionar el almacenamiento de datos donde ese contenedor va a leer y escribir, sin hacerlo a mano cada vez?
 
-_(tu respuesta)_
+Necesitaría automatizar la creación y configuración del almacenamiento mediante infraestructura como código. El contenedor empaqueta la aplicación, pero no provisiona por sí solo el almacenamiento externo que esta necesita.

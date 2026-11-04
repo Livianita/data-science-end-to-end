@@ -3,19 +3,19 @@
 # la base, despues las dependencias, despues tu codigo.
 
 # TODO: elige la imagen base. Para la mayoria de proyectos de este curso: python:3.11-slim
-FROM TODO
+FROM python:3.11-slim
 
 # TODO: fija la carpeta de trabajo dentro del contenedor (ej. /app)
-WORKDIR TODO
+WORKDIR /app
 
 # TODO: copia tu archivo de dependencias (ej. requirements.txt) ANTES que tu codigo
-COPY TODO .
+COPY requirements.txt .
 
 # TODO: instala tus dependencias
-RUN TODO
+RUN pip install -r requirements.txt
 
 # TODO: copia el resto de tu codigo (ej. tu script principal, o la carpeta src/)
-COPY TODO .
+COPY explorar_tiendas.py .
 
 # TODO: define el comando que corre tu proyecto por defecto
-CMD [TODO]
+CMD ["python", "explorar_tiendas.py"]

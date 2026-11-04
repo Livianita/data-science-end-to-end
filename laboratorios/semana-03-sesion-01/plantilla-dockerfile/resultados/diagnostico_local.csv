@@ -1,0 +1,6 @@
+columna,tipo,faltantes,valores_distintos
+store_nbr,int64,0,54
+city,str,0,22
+state,str,0,16
+type,str,0,5
+cluster,int64,0,17
