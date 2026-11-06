@@ -22,11 +22,11 @@ A partir de la lectura previa:
 
 **El artículo da un ejemplo: agregar una base de datos nueva por el método manual puede requerir un ticket al equipo de infraestructura y días de espera. ¿Qué reemplaza ese ticket y esa espera con infraestructura como código?**
 
-_(tu respuesta)_
+Una configuración de infraestructura guardada como código y ejecutada mediante herramientas de automatización. Los cambios pueden revisarse y versionarse en Git, y aplicarse mediante un proceso repetible. Las aprobaciones pueden seguir existiendo, pero la creación de recursos deja de depender de configurarlos manualmente.
 
 **Docker Compose ya describe el resultado final deseado en un archivo YAML declarativo. ¿Alcanza eso para llamarlo infraestructura como código completa, o falta algo? Anota tu intuición, la retomamos formalmente más adelante en la guía.**
 
-_(tu respuesta)_
+Mi intuición es que Compose sí aplica infraestructura como código al describir servicios, redes y volúmenes en un archivo declarativo. Terraform agrega un alcance más amplio mediante proveedores, un estado que relaciona la configuración con los recursos administrados y un plan explícito de los cambios que aplicará.
 
 ## Paso 1: Postgres y pgAdmin con Docker Compose
 
@@ -63,11 +63,11 @@ pgAdmin queda en el puerto 8085, no en el 8080: ese puerto lo usa Kestra desde l
 
 **Respuesta 1, antes de correr `docker compose up`:** si quitáramos el bloque `volumes` de `pg-database` y detuviéramos los contenedores, ¿qué pasaría con los datos que hayamos cargado?
 
-_(tu respuesta)_
+Detener un contenedor no elimina automáticamente sus datos. Sin un volumen administrado explícitamente, no tendría garantizada su recuperación al eliminar y recrear el contenedor. El volumen nombrado datos_postgres permite reutilizar los datos entre contenedores. Al ejecutar docker compose down -v, eliminé también ese volumen y su contenido.
 
 **Respuesta 2:** dentro de pgAdmin, para conectarte a la base de datos, ¿qué valor va en el campo "Host": `localhost` o el nombre del servicio `pg-database`?
 
-_(tu respuesta)_
+Debo usar pg-database, el nombre del servicio de Postgres en la red de Compose. localhost dentro del contenedor de pgAdmin apunta al propio pgAdmin, no al contenedor de Postgres.
 
 Levanta los dos servicios:
 
@@ -99,7 +99,7 @@ Agrega el tercer servicio al archivo:
 
 **Respuesta, antes de correr nada:** `depends_on` hace que Docker Compose arranque `pg-database` antes que `ingesta`. ¿Eso garantiza que Postgres ya acepta conexiones en el momento exacto en que el script de ingesta intenta conectarse? Anota tu intuición, la respuesta llega en clase antes de correr el comando.
 
-_(tu respuesta)_
+No. En esta configuración, depends_on establece el orden de arranque, pero no espera a que Postgres acepte conexiones. El script implementa hasta 10 intentos de conexión, con una espera de 3 segundos entre intentos fallidos. En mi ejecución se conectó en el primer intento.
 
 Corre:
 
@@ -113,7 +113,7 @@ Sigue los logs del contenedor `ingesta`: si Postgres todavía no está listo, re
 SELECT mes_origen, COUNT(*) FROM viajes_taxi GROUP BY mes_origen ORDER BY mes_origen;
 ```
 
-_(cuántas filas viste por mes)_
+Verifiqué en pgAdmin 300.000 filas de enero de 2023, 300.000 de febrero y 300.000 de marzo: 900.000 viajes en total.
 
 ## Durante el ConcepTest
 
@@ -262,6 +262,10 @@ terraform apply
 Revisa `terraform plan` antes de confirmar el `apply`: ¿coincide con lo que esperabas crear? `docker compose down -v` borró el volumen de Compose, así que Terraform parte con un volumen nuevo y vacío, y su contenedor de ingesta vuelve a cargar los tres meses. Cuando termine (`docker logs -f ingesta`), verifica en pgAdmin (regístrala de nuevo si hace falta) que están los 900.000 viajes, esta vez en la infraestructura que levantó Terraform. Después corre `terraform plan` otra vez: con todo ya creado, ¿qué esperas que diga?
 
 _(qué mostró tu `terraform plan`, y qué verificaste en pgAdmin)_
+Terraform creó 8 recursos. La ingesta reportó 900.000 filas cargadas. Al ejecutar nuevamente terraform plan, apareció “No changes. Your infrastructure matches the configuration”.
+"2023-01"	300000
+"2023-02"	300000
+"2023-03"	300000
 
 Al final de la sesión, para no dejar contenedores corriendo:
 
@@ -275,4 +279,4 @@ Ya tienes la infraestructura de datos levantada y el pipeline de ingesta corrien
 
 Pregunta: ¿cómo te aseguras de que ese pipeline corra solo, todos los días, sin que alguien tenga que acordarse de correrlo a mano?
 
-_(tu respuesta)_
+Necesito un programador u orquestador que ejecute el pipeline automáticamente con una frecuencia diaria y permita observar errores y reintentos. Compose y Terraform preparan la infraestructura, pero la configuración de este laboratorio no programa ejecuciones diarias.

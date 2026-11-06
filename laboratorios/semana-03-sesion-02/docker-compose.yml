@@ -1,0 +1,36 @@
+services:
+  pg-database:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: taxi_user
+      POSTGRES_PASSWORD: taxi_pass
+      POSTGRES_DB: taxi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - datos_postgres:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:9.18
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8085:80"
+    depends_on:
+      - pg-database
+
+  ingesta:
+    build: .
+    environment:
+      PG_HOST: pg-database
+      PG_PORT: 5432
+      PG_DATABASE: taxi_db
+      PG_USER: taxi_user
+      PG_PASSWORD: taxi_pass
+      PG_TABLE: viajes_taxi
+    depends_on:
+      - pg-database
+
+volumes:
+  datos_postgres:
