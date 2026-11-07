@@ -58,22 +58,19 @@ Como la imagen solo copia el script y requirements.txt, no encuentra datos/venta
 
 **Lo que confirmó la salida, TODO por TODO:**
 
-_(anota el Dockerfile final, el comando con `-v`, y lo que no esperabas)_
+El Dockerfile final sigue este orden: `FROM python:3.11-slim`, `WORKDIR /app`, `COPY requirements.txt .`, `RUN pip install -r requirements.txt`, `COPY procesar.py .`, `CMD ["python", "procesar.py"]`.
+
+Comando reproducible en PowerShell, desde `starter/ejercicio1`:
+
+```powershell
+docker run --rm -v "${PWD}/datos:/app/datos" procesar-ventas
+```
+
 Comprobé que las dependencias se reutilizan desde la caché cuando solo cambia el código. Después de agregar CMD, el script arrancó, pero produjo FileNotFoundError porque faltaban los datos. Al montar la carpeta datos, generó el resumen en mi máquina: monitor 409.99, teclado 117.5 y mouse 33.5. Me llamó la atención que los archivos locales no están disponibles automáticamente dentro del contenedor.
 
 ## Durante el ConcepTest
 
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-_(tu voto)_
-
-**Tu razonamiento:**
-
-_(tu respuesta)_
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-_(tu respuesta)_
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: la imagen de un resumen de clientes
 
@@ -89,6 +86,12 @@ bash comprobar.sh
 ```
 
 **Respuesta 1:** ¿qué comando usaste en el TODO 5? ¿Qué significa, entonces, que `CMD` sea el comando "por defecto"?
+
+Comando para ejecutar desde `starter/ejercicio2`, después de construir `resumir-clientes`:
+
+```powershell
+docker run --rm -v "${PWD}/datos:/app/datos" resumir-clientes python contar_filas.py
+```
 
 CMD es el comando por defecto porque se ejecuta cuando no proporciono otro después del nombre de la imagen. En esta ejecución lo reemplacé por python contar_filas.py, sin modificar el Dockerfile ni reconstruir la imagen.
 
