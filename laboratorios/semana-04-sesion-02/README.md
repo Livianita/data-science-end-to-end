@@ -2,7 +2,7 @@
 
 > Objetivo de la sesión: diagnosticar problemas de calidad en el dataset de tu proyecto (duplicados, valores faltantes, inconsistencias de esquema) y justificar qué estrategia de limpieza aplica a cada uno.
 
-**Lectura previa de esta sesión:** ["An Introduction to Data Quality"](https://medium.com/towards-data-science/an-introduction-to-data-quality-951cc6fe0274), Towards Data Science / Medium.
+**Lectura previa de esta sesión:** ["An Introduction to Data Quality"](https://medium.com/data-science/an-introduction-to-data-quality-951cc6fe0274), Hadi Fadlallah, TDS Archive / Medium, 9 de diciembre de 2018.
 
 **Referencia de esta sesión:** *Designing Machine Learning Systems*, Cap. 3, Data Engineering Fundamentals (Chip Huyen).
 
@@ -16,11 +16,11 @@ A partir de la lectura previa:
 
 **Según el artículo, ¿por qué un modelo puede entrenar sin ningún error y producir métricas razonables, aunque los datos de entrada tengan problemas serios de calidad?**
 
-Que el entrenamiento termine solo demuestra que el algoritmo pudo procesar los datos. Los duplicados, faltantes o valores incorrectos pueden pasar inadvertidos y producir métricas aparentemente razonables. Esta respuesta conceptual queda pendiente de contrastar con la lectura previa, que no estuvo accesible al preparar el documento.
+El artículo define la calidad según la utilidad de los datos en su contexto y distingue consistencia, exactitud, unicidad, completitud y oportunidad temporal. Aplicando esas ideas al entrenamiento, ejecutar sin errores no garantiza cumplir esas dimensiones: el modelo puede procesar valores incorrectos o duplicados. Esta conexión con modelos es una interpretación de la lectura, no una afirmación explícita del autor. En el laboratorio, las fechas se convertían sin error pero representaban días equivocados.
 
 **El artículo distingue varias dimensiones de calidad de datos. ¿Cuál te parece más difícil de detectar solo con un vistazo rápido al dataset, sin código?**
 
-Como propuesta de reflexión: la exactitud, porque un valor puede parecer válido y estar equivocado. Se necesita contrastarlo con una fuente confiable o reglas del negocio. Pendiente de confirmar esta elección personal y contrastarla con la lectura.
+Elegiría la exactitud: el artículo la relaciona con la correspondencia entre los valores almacenados y la realidad. Un monto puede tener formato correcto y aun así no coincidir con el comprobante. Detectarlo requiere contrastar la fuente o conocer el negocio. Esto también muestra el límite del diagnóstico de items.csv: no encontrar faltantes ni duplicados no prueba que todas sus categorías sean correctas.
 
 ## Pregunta de apertura
 
