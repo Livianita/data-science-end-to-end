@@ -23,17 +23,17 @@ A partir de la lectura previa:
 
 **Según el artículo, ¿qué diferencia hay entre encadenar scripts con un cron job y usar una herramienta de orquestación?**
 
-_(tu respuesta)_
+Un cron programa un comando. La orquestación centraliza las etapas, dependencias y seguimiento del pipeline. La lectura destaca visibilidad, documentación y control de versiones. Aplicado al ejercicio, Kestra permite revisar tareas y reintentar fallos sin reconstruir manualmente toda la secuencia.
 
 **¿Por qué un cron job, que solo dispara un comando a una hora fija, no resuelve por sí solo el problema de un pipeline que falla a mitad de camino?**
 
-_(tu respuesta)_
+Disparar un comando no registra por sí solo qué etapa debe recuperarse ni define reintentos, dependencias o backfill. Eso requiere lógica adicional o un orquestador.
 
 ## Pregunta de apertura
 
 Tu script de ingesta corre perfecto cuando tú lo ejecutas a las 10 de la mañana, mirando la pantalla. Si tiene que correr todos los días a las 3 de la madrugada, sin que nadie esté despierto para revisarlo, ¿qué cosas pueden salir mal que hoy nunca has visto fallar?
 
-_(tu respuesta)_
+Pueden fallar la red, la fuente, las credenciales, la disponibilidad de archivos o el almacenamiento. Necesito logs, alertas y reintentos, además de evitar duplicados al repetir una carga.
 
 ## Ejercicio 1: la ingesta diaria de una fuente inestable
 
@@ -48,33 +48,23 @@ Después, en Kestra (`localhost:8080`, sección Flows), abre `proyecto.ingesta` 
 
 **Respuesta 1, antes de ver la solución:** después de presionar "Execute" tres veces, ¿tienes un flow o tres? ¿Una ejecución o tres? ¿Cuántas esperas que fallen?
 
-_(tu respuesta)_
+Es un flow con tres ejecuciones. Con probabilidad de fallo 0.5, el número esperado de fallos es 1.5; en tres ejecuciones concretas pueden fallar de cero a tres. Pendiente ejecutar y observar los resultados reales.
 
 **Respuesta 2 (TODO 1):** ¿qué le agregarías al flow para que una falla de la fuente no dependa de que alguien lo vuelva a correr a mano?
 
-_(tu respuesta)_
+Un retry de tipo constant, con maxAttempts: 3 e interval: PT10S, como pide el TODO. Debe aplicarse a la tarea que puede fallar; no garantiza éxito si la fuente sigue caída.
 
 **Respuesta 3 (TODO 3):** con el trigger agregado, si la ejecución de una noche agota sus reintentos y falla, ¿la ejecución programada de la noche siguiente también falla, o corre normal?
 
-_(tu respuesta)_
+La siguiente ejecución programada es independiente y vuelve a intentar normalmente. Si la causa persiste puede fallar también, pero no por heredar automáticamente el estado fallido anterior.
 
 **Lo que confirmó la ejecución, TODO por TODO:**
 
-_(anota cuántos intentos viste en los logs, y qué fecha imprimió el backfill)_
+Pendiente de ejecución: los flows locales aún conservan TODO. No se dispone de logs de intentos ni backfill para registrar resultados observados.
 
 ## Durante el ConcepTest
 
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-_(tu voto)_
-
-**Tu razonamiento:**
-
-_(tu respuesta)_
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-_(tu respuesta)_
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: la ingesta semanal de una estación de clima
 
@@ -95,15 +85,15 @@ python3 comprobar.py
 
 **Respuesta 1:** en los logs de una ejecución del backfill, ¿qué fecha recibió `ingesta_clima.py`: la de hoy, o la del lunes que se estaba recuperando? ¿Qué pasaría si el script usara la fecha de hoy?
 
-_(tu respuesta)_
+El script debe recibir la fecha del lunes recuperado. Usar la fecha actual produciría registros con una fecha equivocada y no reconstruiría el histórico. Pendiente verificarlo en los logs.
 
 **Respuesta 2:** ¿alguna ejecución del backfill necesitó más de un intento? ¿Dónde lo ves en Kestra?
 
-_(tu respuesta)_
+Pendiente: revisar en Kestra las ejecuciones del backfill y los intentos de cada tarea. No se ha observado una ejecución para afirmar cuántos intentos necesitó.
 
 **Si terminas antes:** si la estación estuvo caída dos semanas seguidas, ¿subirías `maxAttempts` a 50, o harías un backfill cuando vuelva? ¿Qué problema resuelve cada uno?
 
-_(tu respuesta)_
+Usaría reintentos acotados para fallos transitorios y backfill al recuperar la fuente tras dos semanas. Cincuenta intentos no sustituyen la reconstrucción de los periodos omitidos.
 
 ## Ejercicio 3: el flow de tu propio proyecto
 
@@ -113,23 +103,23 @@ Usa el mismo patrón de los Ejercicios 1 y 2, aplicado a la ingesta de tu proyec
 
 Confirma con `docker images` que la imagen de tu proyecto existe en tu máquina (si no, vuelve a construirla con `docker build -t <nombre>:<tag> .`). Completa `id`, `namespace`, `containerImage` con el nombre y el tag de tu imagen, y el comando que corre tu script con la ruta completa de su `WORKDIR` (por ejemplo, `python /app/ingesta.py`): Kestra corre los comandos en su propia carpeta de trabajo, no en la de tu imagen. `pullPolicy: NEVER` le dice a Kestra que use la imagen local en vez de buscarla en Docker Hub.
 
-_(tu id, namespace e imagen)_
+Pendiente: la plantilla del flow todavía no define id, namespace ni imagen del proyecto. No se declara este ejercicio como terminado.
 
 ### Paso 2: decide el retry (5 minutos)
 
 Piensa en tu fuente de datos: ¿es una API externa que a veces no responde? ¿un archivo que a veces todavía no está listo? Decide `maxAttempts` e `interval` según qué tan probable y qué tan larga es esa falla, y descomenta el bloque `retry`.
 
-_(tu decisión de retry, y por qué)_
+Propuesta pendiente de implementar: pocos reintentos separados por un intervalo razonable para fallos transitorios. Si falta un CSV estático de Favorita, primero hay que corregir la ruta o disponibilidad; repetir indefinidamente no lo resuelve.
 
 ### Paso 3: agrega el trigger Schedule (6 minutos)
 
 Descomenta el bloque `triggers` y elige una expresión cron con la frecuencia que tenga sentido para tu proyecto. No todos los proyectos necesitan correr todos los días.
 
-_(tu expresión cron, y por qué esa frecuencia)_
+Pendiente de definir según la actualización de la fuente. Un catálogo estático no necesita reingesta diaria solo para simular actividad; la frecuencia debe corresponder a datos nuevos disponibles.
 
 Súbelo con `bash ../starter/subir_a_kestra.sh flow_proyecto.yml` desde `plantilla-flow/` (sin scripts: ya están en la imagen) y ejecútalo manualmente al menos una vez para confirmar que corre sin errores.
 
-_(qué verificaste, y si encontraste algún error)_
+Pendiente: construir y subir el flow del proyecto, ejecutarlo y guardar evidencia. La carga posterior del warehouse se hizo sobre el CSV original, no sobre una salida de este pipeline.
 
 ## Antes de la próxima sesión
 
@@ -137,4 +127,4 @@ Ya tienes tu pipeline de ingesta corriendo solo, todos los días o con la frecue
 
 Pregunta: ¿cómo sabes si los datos que trajo son datos buenos, o datos con problemas que ningún error de ejecución te va a avisar?
 
-_(tu respuesta)_
+Aplicaría controles de duplicados, faltantes, tipos, rangos, formatos e integridad entre tablas. Que una ejecución termine bien solo demuestra que el código pudo correr, no que los datos sean correctos.
