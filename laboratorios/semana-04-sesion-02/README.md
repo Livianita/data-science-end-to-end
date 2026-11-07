@@ -55,17 +55,7 @@ TODO 1: 2 duplicados y 8 filas finales. TODO 2: 1 temperatura faltante visible. 
 
 ## Durante el ConcepTest
 
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-Pendiente: no se dispone del enunciado ni del voto original del ConcepTest.
-
-**Tu razonamiento:**
-
-Pendiente: se necesita el enunciado y las alternativas para justificar el voto.
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-Pendiente: no se ha documentado discusión en pareja ni cambio de voto.
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: pedidos de una tienda
 
