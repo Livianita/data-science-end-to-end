@@ -117,19 +117,7 @@ Verifiqué en pgAdmin 300.000 filas de enero de 2023, 300.000 de febrero y 300.0
 
 ## Durante el ConcepTest
 
-Pregunta: si Terraform ya creó los tres contenedores y alguien detiene `pg-database` manualmente con `docker stop`, ¿qué muestra `terraform plan` al correrlo después?
-
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-_(tu voto)_
-
-**Tu razonamiento:**
-
-_(tu respuesta)_
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-_(tu respuesta)_
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Paso 3: el mismo resultado con Terraform
 
@@ -261,7 +249,6 @@ terraform apply
 
 Revisa `terraform plan` antes de confirmar el `apply`: ¿coincide con lo que esperabas crear? `docker compose down -v` borró el volumen de Compose, así que Terraform parte con un volumen nuevo y vacío, y su contenedor de ingesta vuelve a cargar los tres meses. Cuando termine (`docker logs -f ingesta`), verifica en pgAdmin (regístrala de nuevo si hace falta) que están los 900.000 viajes, esta vez en la infraestructura que levantó Terraform. Después corre `terraform plan` otra vez: con todo ya creado, ¿qué esperas que diga?
 
-_(qué mostró tu `terraform plan`, y qué verificaste en pgAdmin)_
 Terraform creó 8 recursos. La ingesta reportó 900.000 filas cargadas. Al ejecutar nuevamente terraform plan, apareció “No changes. Your infrastructure matches the configuration”.
 "2023-01"	300000
 "2023-02"	300000
