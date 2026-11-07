@@ -62,7 +62,7 @@ Si se conserva el nombre y significado de la salida monto_total, el mart puede s
 
 **Lo que confirmó la salida, TODO por TODO:**
 
-La ejecución inicial del ejercicio 2 construyó int_ventas_con_producto, marts_monto_por_categoria y después los staging; test informó Nothing to do porque models estaba vacío. El ejercicio 1 se verificará de nuevo tras corregir sus columnas, YAML y referencias. No se afirma que el ejercicio 2 esté terminado.
+La ejecución inicial del ejercicio 2 construyó int_ventas_con_producto, marts_monto_por_categoria y después los staging; test informó Nothing to do porque models estaba vacío. Tras corregir columnas, YAML y referencias, dbt build del ejercicio 1 construyó primero stg_clientes y stg_pedidos, luego int_pedidos_con_cliente y finalmente marts_ventas_por_ciudad. Pasaron los 4 modelos y las 6 pruebas: PASS=10, ERROR=0. El ejercicio 2 sigue pendiente.
 
 ## Durante el ConcepTest
 

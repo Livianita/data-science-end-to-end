@@ -30,6 +30,8 @@ Tu modelo entrena sin ningún error, y las métricas se ven razonables. ¿Eso si
 
 No. Es necesario revisar duplicados, faltantes, tipos y formatos. En este laboratorio las fechas se interpretaban incorrectamente sin generar errores.
 
+Las respuestas y resultados de esta entrega corresponden a los scripts `.py` ejecutados antes de la actualización del curso. Se conservan junto a los nuevos notebooks como evidencia recuperada. Trasladar las soluciones y salidas a los `.ipynb` y a `psets/proyecto/calidad/` queda pendiente.
+
 ## Ejercicio 1: diagnóstico completo de un archivo de sensores
 
 Notebook: [`starter/ejercicio1_diagnostico.ipynb`](./starter/ejercicio1_diagnostico.ipynb), sobre [`starter/lecturas_sensores.csv`](./starter/lecturas_sensores.csv). Ya lee el archivo, muestra cada paso y guarda el resultado; faltan las líneas que hacen el diagnóstico, marcadas como `TODO 1` a `TODO 4`. Córrelo completo una vez antes de tocar nada (**Run All**).
@@ -92,7 +94,7 @@ Hay 33 familias y perishable solo contiene 0 y 1. family no presenta espacios in
 
 Responde las preguntas de cada sección del notebook. Para cada problema encontrado, documenta la estrategia que aplicarías y por qué, no solo que el problema existe. Antes de hacer commit, reinicia el kernel y corre todo.
 
-**Ruta de tu notebook de diagnóstico en tu fork:**
+**Diagnóstico conservado y estado del traslado al notebook:**
 
 Ver [diagnóstico del proyecto](./plantilla-diagnostico/diagnostico.md). No se justifican eliminaciones ni imputaciones con los resultados actuales. Se recomienda interpretar class como categoría y validar item_nbr al unir con ventas. El análisis utiliza el dataset original; el pipeline de Semana 4, Sesión 1 sigue pendiente.
 
