@@ -21,17 +21,17 @@ A partir de la lectura previa:
 
 **Según el artículo, ¿qué tipo de dato y qué patrón de consulta hacen que un equipo prefiera un data warehouse en vez de un data lake?**
 
-_(tu respuesta)_
+Un warehouse resulta adecuado para datos estructurados e integrados, con consultas SQL recurrentes, reportes y dashboards con definiciones estables.
 
 **¿Y qué tipo de dato y qué patrón de consulta hacen que un equipo prefiera un data lake?**
 
-_(tu respuesta)_
+Un lake permite conservar datos crudos en distintos formatos para exploración y usos futuros, como logs e imágenes para machine learning. Requiere gobierno y controles de calidad; no basta con acumular archivos.
 
 ## Pregunta de apertura
 
 Un equipo de finanzas necesita generar el mismo reporte de ventas todos los lunes, con columnas fijas (fecha, producto, monto), para cargarlo directo a un dashboard. Un equipo de machine learning recolecta clics, logs de la aplicación e imágenes de producto, en formatos distintos, sin saber todavía qué de todo eso va a usar en un modelo futuro. ¿Cuál de los dos necesita un data warehouse, y cuál un data lake?
 
-_(tu respuesta)_
+Finanzas necesita principalmente un warehouse para reportes repetibles. El equipo de ML puede usar un lake para conservar formatos heterogéneos y explorar usos futuros. Ambas arquitecturas pueden complementarse.
 
 ## Ejercicio 1: un warehouse local con pedidos y clientes
 
@@ -44,37 +44,27 @@ python3 ejercicio1_warehouse.py
 
 **Respuesta 1 (TODO 1), antes de ver la solución:** sin el TODO 1, `SHOW TABLES` sale vacío y aun así el Paso 3 devuelve filas. ¿De dónde las está leyendo? ¿Qué cambia cuando `pedidos` es una tabla del warehouse?
 
-_(tu respuesta)_
+Lee directamente pedidos.csv con read_csv_auto. CREATE TABLE AS materializa los datos en la base almacen.duckdb; las consultas pasan a usar la tabla persistida.
 
 **Respuesta 2 (TODO 1):** con la tabla ya creada, si alguien edita `pedidos.csv`, ¿la tabla `pedidos` se actualiza sola, o hay que volver a cargarla?
 
-_(tu respuesta)_
+No se actualiza sola. Hay que volver a cargarla; en este ejercicio CREATE OR REPLACE TABLE sustituye la tabla con el contenido actual del CSV.
 
 **Respuesta 3 (TODO 3):** sin el TODO 3, el Paso 3 devuelve 10 filas, una por pedido. ¿Cuántas esperas después de agregar por categoría?
 
-_(tu respuesta)_
+Tres filas: electronica, hogar y ropa. COUNT(*) cuenta pedidos y SUM(cantidad * precio_unitario) obtiene el monto de cada categoría.
 
 **Respuesta 4 (TODO 4):** ni `pedidos` ni `clientes` responden por separado "¿cuánto se vendió por ciudad?". ¿Qué instrucción de SQL las combina, y por qué columna?
 
-_(tu respuesta)_
+JOIN combina pedidos y clientes por id_cliente. Desde clientes se obtiene ciudad y desde pedidos se calcula el monto.
 
 **Lo que confirmó la salida, TODO por TODO:**
 
-_(anota los números que no esperabas)_
+10 pedidos. Electrónica: 4 pedidos y 3148.0; hogar: 3 y 153.0; ropa: 3 y 144.0. Por indicación de clase, el ejercicio 1 excluye Quito con WHERE: quedan Guayaquil 994.5 y Cuenca 126.0. Sin ese filtro, Quito suma 2324.5.
 
 ## Durante el ConcepTest
 
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-_(tu voto)_
-
-**Tu razonamiento:**
-
-_(tu respuesta)_
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-_(tu respuesta)_
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: ventas por categoría
 
@@ -86,15 +76,15 @@ python3 ejercicio2_ventas.py
 
 **Respuesta 1:** en el Paso 3 aparece un `id_producto` que no está en `productos.csv`. ¿Cuál, y qué le pasa a esa venta en el `JOIN` del Paso 4?
 
-_(tu respuesta)_
+P9 no existe en productos.csv. Su venta queda fuera del INNER JOIN; son 4 unidades en una fila de venta.
 
 **Respuesta 2:** el monto total del Paso 4 no incluye esa venta, y la consulta no dio ningún error. ¿Cómo te darías cuenta de esto en un warehouse con millones de filas?
 
-_(tu respuesta)_
+Compararía el total de ventas con las coincidencias del JOIN y controlaría productos sin correspondencia mediante LEFT JOIN e IS NULL. En estos datos hay 12 ventas y 11 coincidencias. La comparación de conteos requiere que la clave del catálogo sea única.
 
 **Si terminas antes:** ¿qué tipo de `JOIN` conservaría esa venta en el resultado, y qué valor tendría su `categoria`?
 
-_(tu respuesta)_
+LEFT JOIN desde ventas conservaría P9, con categoria y precio NULL. Por ello su monto tampoco puede calcularse sin recuperar el precio.
 
 ## Ejercicio 3: el warehouse de tu propio proyecto
 
@@ -104,19 +94,19 @@ Carga el archivo real que tu pipeline orquestado (Semana 4, Sesión 1) genera pa
 
 Reemplaza el nombre del archivo `.duckdb`, la ruta de tu CSV (o el formato que tu proyecto genere) y el nombre de la tabla.
 
-_(tu nombre de archivo `.duckdb` y de tabla elegidos)_
+Base favorita.duckdb, tabla items. Se utilizó el archivo original items.csv de Favorita; falta conectar la salida del pipeline de Semana 4, Sesión 1.
 
 ### Paso 2: primera consulta, cuántas filas cargaste (5 minutos)
 
 Confirma que el número de filas coincide con lo que esperabas de tu archivo de origen.
 
-_(cuántas filas cargaste, y si coincide con lo esperado)_
+Se cargaron 4100 filas, coincidentes con el archivo original inspeccionado. No se documenta esta carga como salida de un pipeline orquestado.
 
 ### Paso 3: una agregación que responda una pregunta real de tu proyecto (10 minutos)
 
 Elige una columna categórica de tu dataset y agrégala con `GROUP BY`, pensando en una pregunta que de verdad te interese para tu proyecto, no una agregación arbitraria.
 
-_(tu consulta, qué pregunta responde, y qué encontraste)_
+Consulta: SELECT family, COUNT(*) AS cantidad_productos FROM items GROUP BY family ORDER BY cantidad_productos DESC. Responde qué familias tienen más productos: GROCERY I 1334, BEVERAGES 613 y CLEANING 446, entre 33 familias. Describe el catálogo, no ventas.
 
 ## Antes de la próxima sesión
 
@@ -124,4 +114,4 @@ Ya tienes tus datos en un warehouse y corriste tus primeras consultas.
 
 Pregunta: si mañana necesitas ese mismo tipo de consulta pero con una columna calculada nueva, y la próxima semana alguien más del equipo necesita otra variación de la misma lógica, ¿qué pasa si cada quien la escribe como un SQL nuevo desde cero?
 
-_(tu respuesta)_
+Se duplicaría lógica y podrían aparecer definiciones incompatibles del mismo indicador. Conviene organizar transformaciones reutilizables, versionadas, probadas y documentadas en capas, como en dbt.
