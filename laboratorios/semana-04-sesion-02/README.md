@@ -10,6 +10,8 @@
 
 Confirma que tienes pandas (ya viene en el Codespace; en tu laptop, `pip install -r requirements.txt` desde la raíz del repositorio) y acceso al dataset real de tu proyecto, aunque sea en una versión parcial o de muestra.
 
+Los laboratorios de hoy son notebooks de Jupyter (`.ipynb`), los primeros del curso: un diagnóstico es algo que lees para decidir, no algo que corre solo en el pipeline. En el Codespace, ábrelos desde el explorador de VS Code y, la primera vez, elige el kernel de Python 3.11 (sección "Notebooks y scripts" del README de la raíz del repositorio).
+
 ## Antes de empezar
 
 A partir de la lectura previa:
@@ -30,14 +32,9 @@ No. Es necesario revisar duplicados, faltantes, tipos y formatos. En este labora
 
 ## Ejercicio 1: diagnóstico completo de un archivo de sensores
 
-Archivo: [`starter/ejercicio1_diagnostico.py`](./starter/ejercicio1_diagnostico.py), sobre [`starter/lecturas_sensores.csv`](./starter/lecturas_sensores.csv). El script ya lee el archivo, imprime cada paso y guarda el resultado; faltan las líneas que hacen el diagnóstico, marcadas como `TODO 1` a `TODO 4`. Córrelo una vez antes de tocar nada:
+Notebook: [`starter/ejercicio1_diagnostico.ipynb`](./starter/ejercicio1_diagnostico.ipynb), sobre [`starter/lecturas_sensores.csv`](./starter/lecturas_sensores.csv). Ya lee el archivo, muestra cada paso y guarda el resultado; faltan las líneas que hacen el diagnóstico, marcadas como `TODO 1` a `TODO 4`. Córrelo completo una vez antes de tocar nada (**Run All**).
 
-```
-cd laboratorios/semana-04-sesion-02/starter
-python3 ejercicio1_diagnostico.py
-```
-
-**Respuesta 1 (TODO 1), antes de ver la solución:** sin el TODO 1, el script dice que quedan 10 filas. Mirando el CSV, ¿cuántas esperas que queden después de quitar las filas repetidas, y con qué método de pandas las contarías antes de quitarlas?
+**Respuesta 1 (TODO 1), antes de ver la solución:** sin el TODO 1, el notebook dice que quedan 10 filas. Mirando el CSV, ¿cuántas esperas que queden después de quitar las filas repetidas, y con qué método de pandas las contarías antes de quitarlas?
 
 Quedan 8 filas después de quitar 2 duplicados completos. Se cuentan con datos.duplicated().sum() y se eliminan con datos.drop_duplicates(). Respuesta documentada después de resolver el ejercicio.
 
@@ -45,7 +42,7 @@ Quedan 8 filas después de quitar 2 duplicados completos. Se cuentan con datos.d
 
 Quedan 2 temperaturas faltantes: el vacío de S5 y el texto N/D de S3, convertido a NaN mediante pd.to_numeric(..., errors="coerce").
 
-**Respuesta 3 (TODO 4):** sin el TODO 4, el script convierte las fechas con `pd.to_datetime` sin indicar formato. ¿Qué fecha le asignó a S3 (`01/02/2026`) y a S8 (`03/02/2026`)? ¿Apareció algún error?
+**Respuesta 3 (TODO 4):** sin el TODO 4, el notebook convierte las fechas con `pd.to_datetime` sin indicar formato. ¿Qué fecha le asignó a S3 (`01/02/2026`) y a S8 (`03/02/2026`)? ¿Apareció algún error?
 
 S3 se interpretó como 2026-01-02 y S8 como 2026-03-02, sin error. Sus fechas correctas son 2026-02-01 y 2026-02-03, respectivamente.
 
@@ -59,11 +56,7 @@ No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: pedidos de una tienda
 
-Solo o en pareja. Archivo: [`starter/ejercicio2_pedidos.py`](./starter/ejercicio2_pedidos.py), sobre [`starter/pedidos_tienda.csv`](./starter/pedidos_tienda.csv). Son los mismos pasos del Ejercicio 1 sobre otro archivo, más uno nuevo (TODO 5). Al final, el script imprime una comprobación por TODO: completa los 5 hasta que todas digan `OK`.
-
-```
-python3 ejercicio2_pedidos.py
-```
+Solo o en pareja. Notebook: [`starter/ejercicio2_pedidos.ipynb`](./starter/ejercicio2_pedidos.ipynb), sobre [`starter/pedidos_tienda.csv`](./starter/pedidos_tienda.csv). Son los mismos pasos del Ejercicio 1 sobre otro archivo, más uno nuevo (TODO 5). La última celda imprime una comprobación por TODO: completa los 5 hasta que todas digan `OK`.
 
 **Respuesta 1:** la columna `monto` usa dos marcadores distintos para un dato que no existe. ¿Cuáles son, y cuántos de ellos contó `isna()` antes de convertir?
 
@@ -79,25 +72,27 @@ Los faltantes se representan como NaN y, en la lectura utilizada, la columna num
 
 ## Ejercicio 3: diagnóstico del dataset de tu proyecto
 
-Corre sobre tu propio dataset las mismas verificaciones de los Ejercicios 1 y 2 (`duplicated()`, `isna()`, `dtypes`, conversión con `errors="coerce"`, revisión manual de formatos mezclados), y documenta lo que encuentres en la plantilla [`plantilla-diagnostico/diagnostico.md`](./plantilla-diagnostico/diagnostico.md).
+Copia la plantilla [`plantilla-diagnostico/diagnostico_proyecto.ipynb`](./plantilla-diagnostico/diagnostico_proyecto.ipynb) a `psets/proyecto/calidad/`. Ahí corres sobre tu propio dataset las mismas verificaciones de los Ejercicios 1 y 2 (`duplicated()`, `isna()`, `dtypes`, conversión con `errors="coerce"`, revisión manual de formatos mezclados), y documentas lo que encuentres en las celdas de texto, debajo de la verificación que lo muestra.
 
-El resultado de hoy es el diagnóstico documentado y justificado, no todavía la limpieza completa implementada: antes de corregir hay que entender qué se está corrigiendo y por qué, como muestra el ConcepTest de esta sesión.
+El resultado de hoy es el diagnóstico documentado y justificado, no todavía la limpieza completa implementada: antes de corregir hay que entender qué se está corrigiendo y por qué, como muestra el ConcepTest de esta sesión. La limpieza que decidas aquí pasa a un script de tu pipeline en la Semana 7.
 
 ### Paso 1: corre las verificaciones (10 minutos)
 
-Adapta el código de los Ejercicios 1 y 2 a las columnas reales de tu dataset.
+Reemplaza la ruta del archivo y corre las celdas de código de cada sección. En la sección de esquema, agrega las conversiones que necesiten tus columnas, adaptando el código de los Ejercicios 1 y 2.
 
 Analicé items.csv del proyecto Corporación Favorita: 4100 filas. Revisé dtypes, duplicados completos, unicidad de item_nbr, isna(), conversión numérica con errors="coerce" y marcadores de texto. No se encontraron duplicados, IDs repetidos ni faltantes en estas comprobaciones.
 
 ### Paso 2: revisa manualmente lo que el código no captura solo (5 minutos)
 
-Duplicados, faltantes y tipos se detectan con código; los formatos mezclados (fechas, categorías escritas de más de una forma, unidades distintas) muchas veces requieren mirar valores únicos de una columna (`datos["columna"].unique()`) para notarlos.
+Duplicados, faltantes y tipos se detectan con código; los formatos mezclados (fechas, categorías escritas de más de una forma, unidades distintas) muchas veces requieren mirar los valores distintos de una columna (`datos["columna"].unique()`) para notarlos. La celda de valores faltantes ya los muestra para cada columna de texto.
 
 Hay 33 familias y perishable solo contiene 0 y 1. family no presenta espacios iniciales o finales; normalizar mayúsculas y espacios mantiene 33 categorías. No hay fechas. Estas verificaciones no prueban la exactitud de cada categoría frente a la fuente.
 
-### Paso 3: completa la plantilla de diagnóstico (5 minutos)
+### Paso 3: documenta el diagnóstico (5 minutos)
 
-Para cada problema encontrado, documenta la estrategia que aplicarías y por qué, no solo que el problema existe.
+Responde las preguntas de cada sección del notebook. Para cada problema encontrado, documenta la estrategia que aplicarías y por qué, no solo que el problema existe. Antes de hacer commit, reinicia el kernel y corre todo.
+
+**Ruta de tu notebook de diagnóstico en tu fork:**
 
 Ver [diagnóstico del proyecto](./plantilla-diagnostico/diagnostico.md). No se justifican eliminaciones ni imputaciones con los resultados actuales. Se recomienda interpretar class como categoría y validar item_nbr al unir con ventas. El análisis utiliza el dataset original; el pipeline de Semana 4, Sesión 1 sigue pendiente.
 

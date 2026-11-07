@@ -104,17 +104,17 @@ Una imagen separada para contar_filas.py podría ser más pequeña, tener menos 
 
 ## Ejercicio 3: el Dockerfile de tu propio proyecto
 
-Usa el mismo patrón de los Ejercicios 1 y 2, aplicado al ambiente de tu proyecto. Parte de la plantilla [`plantilla-dockerfile/Dockerfile`](./plantilla-dockerfile/Dockerfile), que trae los `TODO` marcados en vez del Dockerfile en blanco.
+Usa el mismo patrón de los Ejercicios 1 y 2, aplicado al ambiente de tu proyecto. Parte de la plantilla [`plantilla-dockerfile/Dockerfile`](./plantilla-dockerfile/Dockerfile), que trae los `TODO` marcados en vez del Dockerfile en blanco. Tu proyecto vive en [`psets/proyecto/`](../../psets/README.md) durante todo el semestre: copia la plantilla a la raíz de `psets/proyecto/` y trabaja ahí, con tu script de ingesta en `psets/proyecto/ingesta/`.
 
 ### Paso 1: identifica tus dependencias reales (5 minutos)
 
-Lista las librerías externas que tu proyecto necesita (lo que normalmente instalarías con `pip install`). Si todavía no tienes un `requirements.txt`, créalo ahora con esa lista.
+Lista las librerías externas que tu proyecto necesita (lo que normalmente instalarías con `pip install`). Si todavía no tienes un `requirements.txt`, créalo ahora con esa lista, en `psets/proyecto/`, al lado del Dockerfile. Fija la versión de cada librería (`pandas==2.2.2`, no solo `pandas`), como el `requirements.txt` de la raíz del repositorio: sin versión, la imagen que construyas en un mes puede traer una librería distinta de la que probaste hoy.
 
 Para esta primera exploración de Cfavorita necesito pandas==2.2.2. argparse y pathlib forman parte de la biblioteca estándar de Python y no requieren instalación con pip. El script lee stores.csv y genera un diagnóstico por columna.
 
 ### Paso 2: completa el Dockerfile (10 minutos)
 
-Edita `plantilla-dockerfile/Dockerfile`: resuelve cada `TODO`, decidiendo el orden de las instrucciones pensando en la cache (dependencias antes que código), y agrega un volumen en tus notas si tu proyecto lee o escribe datos.
+Edita `psets/proyecto/Dockerfile`: resuelve cada `TODO`, decidiendo el orden de las instrucciones pensando en la cache (dependencias antes que código), y agrega un volumen en tus notas si tu proyecto lee o escribe datos.
 
 ### Paso 3: construye y verifica (5 minutos)
 

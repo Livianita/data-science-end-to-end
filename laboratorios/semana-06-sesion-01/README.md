@@ -86,7 +86,7 @@ No es un error exclusivo de Spark: double usa punto flotante binario y algunos d
 
 ## Ejercicio 3: reescribe una transformación de tu proyecto como job de Spark
 
-Elige una transformación de pandas que ya escribiste sobre el archivo histórico de tu propio proyecto (una columna calculada, una agregación por categoría), y reescríbela con la API de DataFrames de Spark. Parte de la plantilla [`plantilla-spark/construir_job_spark.py`](./plantilla-spark/construir_job_spark.py), que trae los `TODO` marcados en vez del script en blanco.
+Elige una transformación de pandas que ya escribiste sobre el archivo histórico de tu propio proyecto (una columna calculada, una agregación por categoría), y reescríbela con la API de DataFrames de Spark. Parte de la plantilla [`plantilla-spark/construir_job_spark.py`](./plantilla-spark/construir_job_spark.py), que trae los `TODO` marcados en vez del script en blanco: cópiala a `psets/proyecto/procesamiento/job_spark.py` y complétala ahí.
 
 ### Paso 1: lee tu archivo con Spark (5 minutos)
 
