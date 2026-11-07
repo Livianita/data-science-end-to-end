@@ -1,51 +1,27 @@
-# Diagnóstico de calidad de datos: [nombre de tu proyecto]
+﻿# Diagnóstico de calidad de datos: Corporación Favorita
 
-Dataset analizado: [nombre o ruta del archivo]. Fecha del diagnóstico: [TODO].
+Dataset: items.csv, archivo original del catálogo. Fecha: 2026-11-06.
 
 ## Duplicados
 
-**¿Cuántas filas duplicadas encontraste?** (`datos.duplicated().sum()`)
-
-_(TODO)_
-
-**¿Por qué crees que existen?** (¿error de ingesta, de combinación de fuentes, evento legítimo repetido?)
-
-_(TODO)_
-
-**Estrategia y justificación:**
-
-_(TODO)_
+Se analizaron 4100 filas. Duplicados completos: 0. Identificadores item_nbr repetidos: 0. No hay evidencia para atribuir duplicados a una causa ni se justifica eliminar filas. Se recomienda validar la unicidad en futuras cargas.
 
 ## Valores faltantes
 
-**¿Qué columnas tienen valores faltantes, y cuántos por columna?** (`datos.isna().sum()`, y revisa también valores como "N/D", "-" o vacíos que `isna()` no detecta directamente)
+isna().sum() devolvió 0 en item_nbr, family, class y perishable. No se encontraron marcadores N/D, -, sin dato ni cadenas vacías después de quitar espacios. Las conversiones numéricas de item_nbr, class y perishable no produjeron faltantes.
 
-_(TODO)_
-
-**¿Faltan al azar, o siguen un patrón relacionado con otra variable?**
-
-_(TODO)_
-
-**Estrategia y justificación por columna:**
-
-_(TODO)_
+No hay faltantes detectados para evaluar patrones. Esto no demuestra que el catálogo real esté completo. No se propone imputar ni eliminar registros sin evidencia adicional.
 
 ## Inconsistencias de esquema
 
-**¿Alguna columna tiene el tipo de dato incorrecto según `datos.dtypes`?**
+item_nbr, class y perishable son int64; family es texto. item_nbr es un identificador y class un código categórico: su almacenamiento numérico no implica que sean magnitudes continuas.
 
-_(TODO)_
+Se encontraron 33 familias, sin espacios iniciales o finales. Normalizar mayúsculas y espacios mantiene 33 categorías. perishable solo contiene 0 y 1. No hay columnas de fecha.
 
-**¿Alguna columna mezcla formatos (fechas, categorías escritas de más de una forma, unidades distintas)?**
-
-_(TODO)_
-
-**Estrategia y justificación:**
-
-_(TODO)_
+No se detectaron inconsistencias en estas comprobaciones. Se recomienda contrastar códigos y categorías con el diccionario de datos antes de recodificarlos y validar el dominio de perishable en futuras cargas.
 
 ## Resumen
 
-**De los problemas encontrados, ¿cuál priorizarías corregir primero, y por qué?**
+No se justifican eliminaciones ni imputaciones con la evidencia actual. La prioridad es preservar la unicidad de item_nbr y verificar coincidencias al unir con ventas. Este diagnóstico solo cubre items.csv, no todos los archivos del proyecto.
 
-_(TODO)_
+Se usó el dataset original. El pipeline de Semana 4, Sesión 1 y el diagnóstico de su salida siguen pendientes.

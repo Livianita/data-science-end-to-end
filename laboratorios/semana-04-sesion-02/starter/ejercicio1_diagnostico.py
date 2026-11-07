@@ -18,7 +18,8 @@ print()
 print("Paso 1: duplicados")
 # TODO 1: cuenta las filas que repiten todas sus columnas y despues
 # quitalas de datos.
-duplicados = None
+duplicados = datos.duplicated().sum()
+datos = datos.drop_duplicates()
 print(f"Filas duplicadas: {duplicados}")
 print(f"Filas despues de quitarlas: {len(datos)}")
 
@@ -26,14 +27,14 @@ print()
 print("Paso 2: tipos y faltantes visibles")
 print(datos.dtypes)
 # TODO 2: cuenta los valores faltantes de cada columna.
-faltantes = None
+faltantes = datos.isna().sum()
 print(faltantes)
 
 print()
 print("Paso 3: faltantes disfrazados de texto")
 # TODO 3: convierte temperatura a numero. Lo que no se pueda convertir
 # tiene que quedar como faltante, no detener el script.
-datos["temperatura_num"] = datos["temperatura"]
+datos["temperatura_num"] = pd.to_numeric(datos["temperatura"], errors="coerce")
 print(f"Temperaturas faltantes antes de convertir: {datos['temperatura'].isna().sum()}")
 print(f"Temperaturas faltantes despues de convertir: {datos['temperatura_num'].isna().sum()}")
 
@@ -44,7 +45,10 @@ print("Paso 4: fechas con dos formatos")
 def normalizar_fecha(valor):
     # TODO 4: si valor tiene "/", viene como dia/mes/anio; si no, como
     # anio-mes-dia. Convierte cada caso con su formato explicito.
-    return pd.to_datetime(valor)
+    if "/" in valor:
+        return pd.to_datetime(valor, format="%d/%m/%Y", errors="coerce")
+    else:
+        return pd.to_datetime(valor, format="%Y-%m-%d", errors="coerce")
 
 
 datos["fecha_normalizada"] = datos["fecha"].apply(normalizar_fecha)

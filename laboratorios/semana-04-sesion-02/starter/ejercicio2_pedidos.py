@@ -16,7 +16,8 @@ print(f"Filas leidas: {len(datos)}")
 print()
 print("Paso 1: duplicados")
 # TODO 1: cuenta las filas que repiten todas sus columnas y quitalas.
-duplicados = None
+duplicados = datos.duplicated().sum()
+datos = datos.drop_duplicates()
 print(f"Filas duplicadas: {duplicados}")
 print(f"Filas despues de quitarlas: {len(datos)}")
 
@@ -24,24 +25,25 @@ print()
 print("Paso 2: tipos y faltantes visibles")
 print(datos.dtypes)
 # TODO 2: cuenta los valores faltantes de cada columna.
-faltantes = None
+faltantes = datos.isna().sum()
 print(faltantes)
 
 print()
 print("Paso 3: faltantes disfrazados de texto")
 print("Valores distintos de monto:", datos["monto"].unique())
 # TODO 3: convierte monto a numero en una columna nueva, monto_num.
-datos["monto_num"] = datos["monto"]
+datos["monto_num"] = pd.to_numeric(datos["monto"], errors="coerce")
 print(f"Montos faltantes despues de convertir: {datos['monto_num'].isna().sum()}")
 
 print()
 print("Paso 4: fechas con dos formatos")
 
-
 def normalizar_fecha(valor):
     # TODO 4: mismo criterio que en el Ejercicio 1.
-    return pd.to_datetime(valor)
-
+    if "/" in valor:
+        return pd.to_datetime(valor, format="%d/%m/%Y", errors="coerce")
+    else:
+        return  pd.to_datetime(valor, format="%Y-%m-%d", errors="coerce")
 
 datos["fecha_normalizada"] = datos["fecha"].apply(normalizar_fecha)
 print(datos[["pedido_id", "fecha", "fecha_normalizada"]])
@@ -51,7 +53,7 @@ print("Paso 5: lo que duplicated() no ve")
 # TODO 5: cuantos pedido_id aparecen mas de una vez despues del Paso 1.
 # Pista: compara la cantidad de filas con la cantidad de pedido_id
 # distintos.
-pedidos_repetidos = None
+pedidos_repetidos = len(datos) - datos["pedido_id"].nunique()
 print(f"Pedidos repetidos con valores distintos: {pedidos_repetidos}")
 
 
