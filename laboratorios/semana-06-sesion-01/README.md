@@ -23,17 +23,17 @@ A partir de la lectura previa:
 
 **Según el artículo, ¿qué distingue a un job de procesamiento por lotes (batch) de un job de procesamiento en tiempo real (streaming)?**
 
-_(tu respuesta)_
+Batch procesa conjuntos acumulados en ejecuciones delimitadas. Streaming procesa datos conforme llegan, con menor latencia. La lectura distingue además usar un modelo para predecir de actualizarlo: predicción en streaming no implica aprendizaje online.
 
 **El artículo describe el procesamiento distribuido como una forma de repartir el trabajo entre varias máquinas o núcleos. ¿Qué problema resuelve repartir el trabajo, que un solo proceso de pandas no resuelve?**
 
-_(tu respuesta)_
+Repartir datos y tareas permite aprovechar varios núcleos o máquinas y no exigir que un único proceso contenga todo el dataset. En este laboratorio local[*] usa la propia máquina: no demuestra ejecución en un clúster ni elimina todos los límites de memoria.
 
 ## Pregunta de apertura
 
 Tu pipeline de la Semana 4 lleva semanas acumulando el histórico de tu proyecto. Un día ese archivo pesa más que la memoria RAM de tu laptop. ¿Qué le pasa exactamente a un script de pandas que intenta leerlo con `pd.read_csv()`, y por qué?
 
-_(tu respuesta)_
+pd.read_csv() intenta construir el DataFrame completo en memoria por defecto, con memoria adicional para el parseo. Si no hay RAM suficiente, puede paginar intensamente, lanzar MemoryError o ser terminado por el sistema. Leer por chunks es una alternativa cuando el cálculo lo permite.
 
 ## Ejercicio 1: ventas por categoría, con Spark
 
@@ -46,33 +46,23 @@ python3 ejercicio1_spark.py
 
 **Respuesta 1 (TODO 1), antes de ver la solución:** con el filtro escrito, `spark.read.csv(...)` y `.filter(...)` todavía no ejecutan nada. ¿En qué línea del script se lee de verdad el archivo?
 
-_(tu respuesta)_
+Para ejecutar el filtro, count() es la primera acción posterior que evalúa ese plan. Matiz: con inferSchema=True, spark.read.csv también puede recorrer datos para inferir tipos; por eso no es exacto afirmar que la lectura inicial nunca hace trabajo.
 
 **Respuesta 2 (TODO 2 y 3):** ¿qué método de la API de Spark esperas que sea el equivalente del `GROUP BY` de SQL que usaste con DuckDB? ¿Cuántas filas tendrá `resumen`?
 
-_(tu respuesta)_
+groupBy("categoria").agg(...) es el equivalente de la agregación SQL. resumen tiene 3 filas, una por categoría, usando todas las ventas de con_monto.
 
 **Respuesta 3 (TODO 4):** cuando `resumen.write.csv(...)` corre, ¿esperas un solo archivo `.csv`, como `df.to_csv()` de pandas, o algo distinto?
 
-_(tu respuesta)_
+Una carpeta con uno o varios archivos part-*.csv y un marcador _SUCCESS. El número de archivos depende de las particiones de salida; no se debe asumir un único CSV.
 
 **Lo que confirmó la salida, TODO por TODO:**
 
-_(anota los números y lo que apareció en `resumen_por_categoria/`)_
+Filtro: 3 ventas de electrónica. Agregación: electronica 3 y 676.5; hogar 5 y 215.23000000000002; ropa 4 y 214.92000000000002. Spark guardó resumen_por_categoria con part-*.csv, _SUCCESS y archivos CRC en Windows. Se configuraron componentes locales de Hadoop para resolver la escritura.
 
 ## Durante el ConcepTest
 
-**Tu voto, antes de discutir en pareja** (A, B, C o D):
-
-_(tu voto)_
-
-**Tu razonamiento:**
-
-_(tu respuesta)_
-
-**Después de discutir en pareja, ¿cambiaste de voto? ¿Por qué?**
-
-_(tu respuesta)_
+No requerido para esta entrega, según indicación de la estudiante.
 
 ## Ejercicio 2: costo de envíos por ciudad
 
@@ -84,15 +74,15 @@ python3 ejercicio2_envios.py
 
 **Respuesta 1:** ¿qué ciudad tiene el costo total más alto, y cuántos envíos quedaron fuera por no estar entregados?
 
-_(tu respuesta)_
+Pendiente ejecutar el ejercicio 2 de envíos. No se registra una ciudad ganadora ni un conteo observado hasta completar y comprobar el script.
 
 **Respuesta 2:** en el TODO 5, pandas leyó el archivo completo en memoria. ¿Por qué tiene sentido verificar contra pandas en este archivo, y por qué no lo harías con el histórico de la pregunta de apertura, el que ya no cabe en la RAM de tu laptop?
 
-_(tu respuesta)_
+El archivo pequeño permite comparar dos implementaciones de la misma transformación. Leer un histórico que no cabe en RAM con pandas completo repetiría el problema original; se necesita una muestra controlada o una verificación por bloques.
 
 **Si terminas antes:** en el Ejercicio 1, `monto_total` de hogar salió `215.23000000000002`. ¿Es un error de Spark? ¿Lo verías también con pandas?
 
-_(tu respuesta)_
+No es un error exclusivo de Spark: double usa punto flotante binario y algunos decimales no son exactos. También puede ocurrir con pandas. Para montos financieros se debe decidir una representación decimal y reglas de redondeo apropiadas.
 
 ## Ejercicio 3: reescribe una transformación de tu proyecto como job de Spark
 
@@ -102,19 +92,19 @@ Elige una transformación de pandas que ya escribiste sobre el archivo históric
 
 Reemplaza la ruta del archivo histórico real de tu proyecto.
 
-_(tu ruta de archivo, y cuántas filas leyó Spark)_
+Pendiente: la plantilla del proyecto conserva TODO y aún no se ha cargado allí un histórico real generado por el pipeline.
 
 ### Paso 2: reescribe tu transformación (10 minutos)
 
 Con `withColumn()` para la columna calculada y `groupBy().agg()` para la agregación, reproduce exactamente el mismo cálculo que ya hacías con pandas.
 
-_(tu transformación, y qué pregunta de tu proyecto responde)_
+Pendiente: escoger y portar una transformación del proyecto. La agregación del catálogo por family ya se conoce de DuckDB, pero no se presenta como un histórico procesado con Spark.
 
 ### Paso 3: corre el job y compara contra pandas (5 minutos)
 
 Confirma que el resultado de Spark coincide con el resultado que ya conocías de pandas.
 
-_(qué mostró tu job, y si coincidió con lo que esperabas)_
+Pendiente: ejecutar el job del proyecto y comparar los resultados con una referencia equivalente. El ejercicio 1 compartido sí quedó ejecutado y guardado.
 
 ## Antes de la próxima sesión
 
@@ -122,4 +112,4 @@ Ya reescribiste una transformación de tu proyecto para que corra en particiones
 
 Pregunta: hoy procesaste un histórico ya acumulado, de una sola vez. ¿Qué pasa si tu proyecto necesita reaccionar a cada dato nuevo apenas llega, sin esperar a que se acumule un lote?
 
-_(tu respuesta)_
+Se necesita un flujo de procesamiento continuo o por micro-lotes con latencia adecuada, además de controlar estado, duplicados y recuperación. No bastaría con esperar al próximo lote histórico programado.
