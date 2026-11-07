@@ -36,3 +36,8 @@ derby.log
 
 # Material reemplazado (no se sube)
 _to_delete/
+
+# Identificadores locales y resultados regenerables del laboratorio
+.user.yml
+resumen_por_categoria/
+resumen_envios/
