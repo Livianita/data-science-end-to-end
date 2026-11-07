@@ -2,11 +2,22 @@ version: 2
 
 models:
   - name: stg_clientes
+    description: Clientes preparados para el modelo intermedio.
     columns:
       - name: id_cliente
         tests:
           - unique
           - not_null
-
-  # TODO 2: agrega stg_pedidos, con las pruebas unique y not_null sobre
-  # la columna que identifica cada pedido.
+  - name: stg_pedidos
+    description: Pedidos con columnas explicitas del archivo de origen.
+    columns:
+      - name: id_pedido
+        tests:
+          - unique
+          - not_null
+      - name: id_cliente
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_clientes')
+              field: id_cliente
