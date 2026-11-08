@@ -62,7 +62,7 @@ Si se conserva el nombre y significado de la salida monto_total, el mart puede s
 
 **Lo que confirmó la salida, TODO por TODO:**
 
-La ejecución inicial del ejercicio 2 construyó int_ventas_con_producto, marts_monto_por_categoria y después los staging; test informó Nothing to do porque models estaba vacío. Tras corregir columnas, YAML y referencias, dbt build del ejercicio 1 construyó primero stg_clientes y stg_pedidos, luego int_pedidos_con_cliente y finalmente marts_ventas_por_ciudad. Pasaron los 4 modelos y las 6 pruebas: PASS=10, ERROR=0. El ejercicio 2 sigue pendiente.
+La ejecución inicial del ejercicio 2 construyó int_ventas_con_producto, marts_monto_por_categoria y después los staging; test informó Nothing to do porque models estaba vacío. Tras corregir columnas, YAML y referencias, dbt build del ejercicio 1 construyó primero stg_clientes y stg_pedidos, luego int_pedidos_con_cliente y finalmente marts_ventas_por_ciudad. Pasaron los 4 modelos y las 6 pruebas: PASS=10, ERROR=0. El ejercicio 2 se completo posteriormente: cuatro modelos y cuatro pruebas correctos, y cinco TODO en OK.
 
 ## Durante el ConcepTest
 
@@ -83,15 +83,15 @@ python3 comprobar.py
 
 **Respuesta 1:** ¿qué prueba falló primero, y qué fila de `ventas.csv` la hizo fallar?
 
-Pendiente de observar: la ejecución inicial no tenía pruebas configuradas. El ejercicio está diseñado para que unique sobre id_venta detecte un duplicado una vez agregado el TODO 2; falta guardar la salida de esa prueba e identificar la fila.
+Falló unique_stg_ventas_id_venta; las otras tres pruebas pasaron. La venta id_venta=4 aparecía dos veces con los mismos valores: id_producto=P1, fecha=2026-04-02 y unidades=5. La prueba devolvió un identificador duplicado, no dos identificadores diferentes.
 
 **Respuesta 2 (TODO 5):** corregiste la causa en `stg_ventas`, no en `ventas.csv`. ¿Por qué ahí y no en el archivo, si el archivo es el que está mal?
 
-La corrección en staging hace la transformación explícita, repetible y versionada; conserva el archivo crudo para auditoría. Pendiente implementar y probar el TODO 5 del ejercicio 2.
+La corrección en staging hace la transformación explícita, repetible y versionada; conserva el archivo crudo para auditoría. Se utilizó SELECT DISTINCT sobre las cuatro columnas porque ambas filas eran idénticas. raw_ventas conserva 13 filas y stg_ventas devuelve 12, con identificadores únicos. Si un mismo identificador tuviera valores distintos, DISTINCT no resolvería por sí solo el conflicto.
 
 **Si terminas antes:** sin el TODO 5, ¿cuánto daba el monto de papelería en el mart, y cuánto da después? ¿Qué habría pasado con ese número si nadie hubiera escrito la prueba?
 
-Pendiente de ejecutar el ejercicio 2 y comparar el mart antes y después de corregir el duplicado. Sin la prueba, una duplicación podría aumentar el monto sin producir un error SQL.
+Antes de corregir el duplicado, papelería sumaba 122.0; después suma 109.5. La diferencia de 12.5 corresponde a las cinco unidades de P1 contabilizadas dos veces. Los montos finales son accesorios 150.0, electrónica 135.0 y papelería 109.5. Sin la prueba, el monto inflado podría publicarse sin error SQL. dbt build terminó con PASS=8 y ERROR=0 (cuatro modelos y cuatro pruebas), y comprobar.py mostró OK en los cinco TODO.
 
 ## Ejercicio 3: modela en capas los datos de tu propio proyecto
 
@@ -116,7 +116,7 @@ dbt run --profiles-dir .
 dbt test --profiles-dir .
 ```
 
-dbt debug informó All checks passed. dbt build --profiles-dir . creó dos vistas y una tabla y ejecutó dos pruebas: PASS=5, WARN=0, ERROR=0, SKIP=0. El orden fue staging, pruebas, intermedia y mart. Se verificó el resultado consultando el mart: 22 ciudades y 54 tiendas. El ejercicio 2 compartido de esta sesión sigue pendiente; este resultado corresponde al ejercicio 3 del proyecto.
+dbt debug informó All checks passed. dbt build --profiles-dir . creó dos vistas y una tabla y ejecutó dos pruebas: PASS=5, WARN=0, ERROR=0, SKIP=0. El orden fue staging, pruebas, intermedia y mart. Se verificó el resultado consultando el mart: 22 ciudades y 54 tiendas. Este resultado corresponde al ejercicio 3 del proyecto; el ejercicio 2 compartido tambien quedo validado por separado con PASS=8 y cinco TODO en OK.
 
 ## Antes de la próxima sesión
 

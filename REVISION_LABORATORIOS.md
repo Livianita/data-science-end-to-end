@@ -23,3 +23,7 @@ Los archivos `.duckdb`, estados de Terraform, identificadores locales de dbt y s
 Se resolvió la conexión manual entre la salida de Kestra y DuckDB para el catálogo de tiendas. El flow ahora conserva también tiendas_pipeline.csv; el script construir_warehouse_tiendas.py carga 54 registros en favorita_tiendas_dbt.duckdb. Esta base se creó con el Python de .venv-dbt para compatibilidad con dbt.
 
 El ejercicio 3 de Semana 5, sesión 2 quedó implementado en psets/proyecto/warehouse/dbt: staging, intermedia y mart. dbt build pasó tres modelos y dos pruebas (PASS=5, ERROR=0). El mart contiene 22 ciudades y 54 tiendas, coincidentes con DuckDB. Queda pendiente el ejercicio 2 compartido de esa sesión; no se confunde con este proyecto terminado. La descarga del CSV y su carga al warehouse todavía son manuales.
+
+## Cierre del ejercicio 2 de dbt (2026-11-08)
+
+Se completo el pendiente de ventas por categoria: id_venta=4 estaba duplicado de forma exacta; SELECT DISTINCT en staging conserva el origen crudo y devuelve 12 ventas. Papeleria paso de 122.0 a 109.5. dbt build: PASS=8, ERROR=0 (cuatro modelos y cuatro pruebas). comprobar.py: cinco TODO en OK. Este resultado reemplaza el estado pendiente de ese ejercicio en las filas historicas anteriores.
