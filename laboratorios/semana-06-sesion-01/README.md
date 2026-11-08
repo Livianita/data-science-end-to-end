@@ -74,11 +74,11 @@ python3 ejercicio2_envios.py
 
 **Respuesta 1:** ¿qué ciudad tiene el costo total más alto, y cuántos envíos quedaron fuera por no estar entregados?
 
-Pendiente ejecutar el ejercicio 2 de envíos. No se registra una ciudad ganadora ni un conteo observado hasta completar y comprobar el script.
+Guayaquil tiene el costo total más alto: 48.0, con 4 envíos entregados. Cuenca suma 26.0 en 3 envíos y Quito 22.75 en 3. Se conservaron 10 de los 14 registros, por lo que quedaron fuera 4 envíos no entregados. Spark guardó resumen_envios con el marcador _SUCCESS. Los cinco TODO terminaron en OK.
 
 **Respuesta 2:** en el TODO 5, pandas leyó el archivo completo en memoria. ¿Por qué tiene sentido verificar contra pandas en este archivo, y por qué no lo harías con el histórico de la pregunta de apertura, el que ya no cabe en la RAM de tu laptop?
 
-El archivo pequeño permite comparar dos implementaciones de la misma transformación. Leer un histórico que no cabe en RAM con pandas completo repetiría el problema original; se necesita una muestra controlada o una verificación por bloques.
+El archivo pequeño permite comparar dos implementaciones de la misma transformación. Ambos cálculos filtraron estado=entregado y sumaron peso_kg por tarifa_por_kg: Spark y pandas devolvieron 96.75. Leer un histórico que no cabe en RAM con pandas completo repetiría el problema original; se necesita una muestra controlada o una verificación por bloques.
 
 **Si terminas antes:** en el Ejercicio 1, `monto_total` de hogar salió `215.23000000000002`. ¿Es un error de Spark? ¿Lo verías también con pandas?
 
