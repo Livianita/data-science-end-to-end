@@ -94,19 +94,21 @@ Carga el archivo real que tu pipeline orquestado (Semana 4, Sesión 1) genera pa
 
 Reemplaza el nombre del archivo `.duckdb`, la ruta de tu CSV (o el formato que tu proyecto genere) y el nombre de la tabla.
 
-Base favorita.duckdb, tabla items. Se utilizó el archivo original items.csv de Favorita; falta conectar la salida del pipeline de Semana 4, Sesión 1.
+La primera práctica utilizó favorita.duckdb y la tabla items sobre el CSV original. Para conectar con Kestra se cargó su salida tiendas_pipeline.csv en favorita_tiendas_dbt.duckdb, tabla tiendas, mediante [construir_warehouse_tiendas.py](./plantilla-warehouse/construir_warehouse_tiendas.py). La descarga desde Outputs y la carga al warehouse son pasos manuales. Se generó esta base con el Python de .venv-dbt para que su versión de DuckDB fuera compatible con dbt.
 
 ### Paso 2: primera consulta, cuántas filas cargaste (5 minutos)
 
 Confirma que el número de filas coincide con lo que esperabas de tu archivo de origen.
 
-Se cargaron 4100 filas, coincidentes con el archivo original inspeccionado. No se documenta esta carga como salida de un pipeline orquestado.
+La práctica inicial cargó 4100 productos del archivo original. La carga conectada con Kestra contiene 54 tiendas, coincidentes con las 54 filas del archivo procesado por el flow; son dos datasets diferentes.
 
 ### Paso 3: una agregación que responda una pregunta real de tu proyecto (10 minutos)
 
 Elige una columna categórica de tu dataset y agrégala con `GROUP BY`, pensando en una pregunta que de verdad te interese para tu proyecto, no una agregación arbitraria.
 
 Consulta: SELECT family, COUNT(*) AS cantidad_productos FROM items GROUP BY family ORDER BY cantidad_productos DESC. Responde qué familias tienen más productos: GROCERY I 1334, BEVERAGES 613 y CLEANING 446, entre 33 familias. Describe el catálogo, no ventas.
+
+Cargué la salida tiendas_pipeline.csv de Kestra en la tabla tiendas de favorita_tiendas_dbt.duckdb. Se cargaron 54 filas. La consulta agrupa por ciudad y cuenta las tiendas: hay 22 ciudades, encabezadas por Quito con 18 tiendas y Guayaquil con 8. El resultado describe la distribución del catálogo de tiendas; no mide ventas.
 
 ## Antes de la próxima sesión
 

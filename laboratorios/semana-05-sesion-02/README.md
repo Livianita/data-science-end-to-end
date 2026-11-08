@@ -101,13 +101,13 @@ Usa el mismo patrón de los Ejercicios 1 y 2 (staging, intermedia, marts), aplic
 
 Renombra `models/staging/stg_TODO.sql` a `stg_<tu_tabla>.sql`, selecciona las columnas de tu tabla cruda, y agrega al menos una prueba (`unique` o `not_null`) en `schema.yml` sobre la columna que identifica cada fila.
 
-Pendiente: la plantilla de modelado del proyecto Favorita conserva TODO. Como clave candidata del catálogo se usaría item_nbr con unique y not_null, después de verificarla en los datos.
+Proyecto implementado en [psets/proyecto/warehouse/dbt](../../psets/proyecto/warehouse/dbt/). stg_tiendas selecciona store_nbr, city, state, type y cluster desde la tabla tiendas cargada con la salida de Kestra. store_nbr tiene pruebas unique y not_null; ambas pasaron. La conexión utiliza favorita_tiendas_dbt.duckdb, creada con la versión de DuckDB del entorno .venv-dbt.
 
 ### Paso 2: intermedia y marts (13 minutos)
 
 Renombra y completa `models/intermedia/int_TODO.sql` con una transformación o combinación de tablas de staging (usando `{{ ref(...) }}`), y `models/marts/marts_TODO.sql` con la agregación final que responda una pregunta real de tu proyecto.
 
-Pendiente: implementar staging, una transformación intermedia y un mart del proyecto usando ref(). Una pregunta posible es el número de productos por familia; aún no se declara como modelo ejecutado.
+int_tiendas_ubicacion utiliza ref('stg_tiendas') y renombra las columnas a id_tienda, ciudad, provincia, tipo_tienda y grupo_tienda. marts_tiendas_por_ciudad utiliza ref('int_tiendas_ubicacion') y cuenta tiendas por ciudad. Responde dónde se concentra el catálogo de tiendas: Quito tiene 18 y Guayaquil 8; no mide ventas. El mart tiene 22 ciudades y la suma de numero_tiendas es 54, coincidente con la consulta directa de DuckDB.
 
 Corre y prueba tu proyecto:
 
@@ -116,7 +116,7 @@ dbt run --profiles-dir .
 dbt test --profiles-dir .
 ```
 
-Pendiente de ejecutar la plantilla del proyecto; no se dispone de resultados para afirmar que sus pruebas pasaron.
+dbt debug informó All checks passed. dbt build --profiles-dir . creó dos vistas y una tabla y ejecutó dos pruebas: PASS=5, WARN=0, ERROR=0, SKIP=0. El orden fue staging, pruebas, intermedia y mart. Se verificó el resultado consultando el mart: 22 ciudades y 54 tiendas. El ejercicio 2 compartido de esta sesión sigue pendiente; este resultado corresponde al ejercicio 3 del proyecto.
 
 ## Antes de la próxima sesión
 

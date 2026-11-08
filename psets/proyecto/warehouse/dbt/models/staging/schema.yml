@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_tiendas
+    description: Catalogo de tiendas de Favorita.
+    columns:
+      - name: store_nbr
+        description: Identificador de cada tienda.
+        tests:
+          - unique
+          - not_null

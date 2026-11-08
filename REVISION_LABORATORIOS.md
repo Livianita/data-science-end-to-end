@@ -17,3 +17,9 @@ El fork remoto recibió una actualización forzada. Los commits anteriores segu�
 Los ConcepTest no se requieren para esta entrega, según la indicación de la estudiante. No se inventaron votos ni discusiones en pareja.
 
 Los archivos `.duckdb`, estados de Terraform, identificadores locales de dbt y salidas regenerables de Spark permanecen fuera de los commits. No se modificaron ni declararon resueltos los laboratorios posteriores al alcance de esta revisión.
+
+## Avance del 2026-11-08: conexión del catálogo de tiendas
+
+Se resolvió la conexión manual entre la salida de Kestra y DuckDB para el catálogo de tiendas. El flow ahora conserva también tiendas_pipeline.csv; el script construir_warehouse_tiendas.py carga 54 registros en favorita_tiendas_dbt.duckdb. Esta base se creó con el Python de .venv-dbt para compatibilidad con dbt.
+
+El ejercicio 3 de Semana 5, sesión 2 quedó implementado en psets/proyecto/warehouse/dbt: staging, intermedia y mart. dbt build pasó tres modelos y dos pruebas (PASS=5, ERROR=0). El mart contiene 22 ciudades y 54 tiendas, coincidentes con DuckDB. Queda pendiente el ejercicio 2 compartido de esa sesión; no se confunde con este proyecto terminado. La descarga del CSV y su carga al warehouse todavía son manuales.
