@@ -1,0 +1,37 @@
+# Ejercicio 3: el flow de la ingesta de tu proyecto.
+# Corre la imagen de Docker que construiste en la Semana 3, Sesion 1. Antes
+# de subirlo, confirma que la imagen existe en tu maquina: docker images
+
+# TODO: dale a este flow un id y un namespace propios de tu proyecto.
+id: exploracion_favorita
+namespace: proyecto.favorita
+
+tasks:
+  - id: explorar_tiendas
+    type: io.kestra.plugin.scripts.shell.Commands
+    # TODO: el nombre y el tag de la imagen de tu proyecto (docker build -t ...).
+    containerImage: cfavorita-exploracion:latest
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      pullPolicy: NEVER
+    namespaceFiles:
+      enabled: true
+    outputFiles:
+      - diagnostico_tiendas.csv
+    # TODO: agrega el bloque retry, pensando en que tan inestable es tu fuente de datos.
+    retry:
+      type: constant
+      maxAttempts: 2
+      interval: PT10S
+    commands:
+      - echo "Procesando datos para {{ trigger.date ?? execution.startDate }}"
+      # TODO: el comando que corre tu script dentro de la imagen, con la ruta
+      # completa de su WORKDIR (por ejemplo, python /app/ingesta.py).
+      - python /app/explorar_tiendas.py --entrada stores.csv --salida diagnostico_tiendas.csv
+
+# TODO: agrega un trigger Schedule con la frecuencia adecuada para tu proyecto (no todos necesitan correr todos los dias).
+triggers:
+  - id: semanal_lunes_0800
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 8 * * 1"
+    timezone: America/Guayaquil

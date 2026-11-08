@@ -48,7 +48,7 @@ Después, en Kestra (`localhost:8080`, sección Flows), abre `proyecto.ingesta` 
 
 **Respuesta 1, antes de ver la solución:** después de presionar "Execute" tres veces, ¿tienes un flow o tres? ¿Una ejecución o tres? ¿Cuántas esperas que fallen?
 
-Es un flow con tres ejecuciones. Con probabilidad de fallo 0.5, el número esperado de fallos es 1.5; en tres ejecuciones concretas pueden fallar de cero a tres. Pendiente ejecutar y observar los resultados reales.
+Es un flow con tres ejecuciones. Con probabilidad de fallo 0.5, el número esperado de fallos es 1.5; en tres ejecuciones concretas pueden fallar de cero a tres. En la prueba inicial se realizaron cinco ejecuciones de proyecto.ingesta: tres fallidas y dos exitosas. Los logs confirmaron el mensaje de error de conexión simulado.
 
 **Respuesta 2 (TODO 1):** ¿qué le agregarías al flow para que una falla de la fuente no dependa de que alguien lo vuelva a correr a mano?
 
@@ -60,7 +60,7 @@ La siguiente ejecución programada es independiente y vuelve a intentar normalme
 
 **Lo que confirmó la ejecución, TODO por TODO:**
 
-Pendiente de ejecución: los flows locales aún conservan TODO. No se dispone de logs de intentos ni backfill para registrar resultados observados.
+Se observó una ejecución que falló y tuvo éxito en el segundo intento, con unos 10 segundos entre intentos, y otra que agotó los tres intentos. La fecha impresa permaneció igual durante los reintentos. Para probar el Schedule se cambió temporalmente el cron a `35 19 * * *`: el 7 de noviembre de 2026 se procesó `2026-11-07T19:35:00-05:00` y el comando terminó con código 0. El archivo local quedó nuevamente con `0 6 * * *`, zona America/Guayaquil; cualquier cambio local debe actualizarse también en Kestra. El backfill se verificó en el ejercicio 2.
 
 ## Durante el ConcepTest
 
@@ -85,11 +85,11 @@ python3 comprobar.py
 
 **Respuesta 1:** en los logs de una ejecución del backfill, ¿qué fecha recibió `ingesta_clima.py`: la de hoy, o la del lunes que se estaba recuperando? ¿Qué pasaría si el script usara la fecha de hoy?
 
-El script debe recibir la fecha del lunes recuperado. Usar la fecha actual produciría registros con una fecha equivocada y no reconstruiría el histórico. Pendiente verificarlo en los logs.
+Los logs mostraron las fechas históricas `2026-10-19T07:00:00-05:00`, `2026-10-26T07:00:00-05:00` y `2026-11-02T07:00:00-05:00`, aunque las ejecuciones ocurrieron el 7 de noviembre. Usar la fecha actual produciría registros con una fecha equivocada y no reconstruiría el histórico. El backfill cubrió del 19 de octubre al 3 de noviembre de 2026; `comprobar.py` devolvió OK en los cinco TODO.
 
 **Respuesta 2:** ¿alguna ejecución del backfill necesitó más de un intento? ¿Dónde lo ves en Kestra?
 
-Pendiente: revisar en Kestra las ejecuciones del backfill y los intentos de cada tarea. No se ha observado una ejecución para afirmar cuántos intentos necesitó.
+En la captura compartida del backfill aparecen tres registros exitosos y no se muestran fallos. Esto no demuestra por sí solo el número de intentos de cada tarea: se consulta en el detalle de la ejecución y sus logs. En el ejercicio 1 sí se observó explícitamente un intento fallido seguido de uno exitoso.
 
 **Si terminas antes:** si la estación estuvo caída dos semanas seguidas, ¿subirías `maxAttempts` a 50, o harías un backfill cuando vuelva? ¿Qué problema resuelve cada uno?
 
@@ -103,23 +103,23 @@ Usa el mismo patrón de los Ejercicios 1 y 2, aplicado a la ingesta de tu proyec
 
 Confirma con `docker images` que la imagen de tu proyecto existe en tu máquina (si no, vuelve a construirla con `docker build -t <nombre>:<tag> .`). Completa `id`, `namespace`, `containerImage` con el nombre y el tag de tu imagen, y el comando que corre tu script con la ruta completa de su `WORKDIR` (por ejemplo, `python /app/ingesta.py`): Kestra corre los comandos en su propia carpeta de trabajo, no en la de tu imagen. `pullPolicy: NEVER` le dice a Kestra que use la imagen local en vez de buscarla en Docker Hub.
 
-Pendiente: la plantilla del flow todavía no define id, namespace ni imagen del proyecto. No se declara este ejercicio como terminado.
+Flow `exploracion_favorita`, namespace `proyecto.favorita`, tarea `explorar_tiendas`, imagen local `cfavorita-exploracion:latest` y pullPolicy NEVER. El comando es `python /app/explorar_tiendas.py --entrada stores.csv --salida diagnostico_tiendas.csv`. El CSV original se subió como archivo del namespace y `outputFiles` conserva el diagnóstico. La copia para el proyecto está en [psets/proyecto/orquestacion/flow_proyecto.yml](../../psets/proyecto/orquestacion/flow_proyecto.yml).
 
 ### Paso 2: decide el retry (5 minutos)
 
 Piensa en tu fuente de datos: ¿es una API externa que a veces no responde? ¿un archivo que a veces todavía no está listo? Decide `maxAttempts` e `interval` según qué tan probable y qué tan larga es esa falla, y descomenta el bloque `retry`.
 
-Propuesta pendiente de implementar: pocos reintentos separados por un intervalo razonable para fallos transitorios. Si falta un CSV estático de Favorita, primero hay que corregir la ruta o disponibilidad; repetir indefinidamente no lo resuelve.
+Se configuró retry constant con maxAttempts 2 e interval PT10S para fallos transitorios de ejecución. Si falta el CSV estático o hay una ruta incorrecta, hay que corregir la causa: repetir no lo resuelve. No se forzó un fallo en el flow de Favorita para probar sus reintentos.
 
 ### Paso 3: agrega el trigger Schedule (6 minutos)
 
 Descomenta el bloque `triggers` y elige una expresión cron con la frecuencia que tenga sentido para tu proyecto. No todos los proyectos necesitan correr todos los días.
 
-Pendiente de definir según la actualización de la fuente. Un catálogo estático no necesita reingesta diaria solo para simular actividad; la frecuencia debe corresponder a datos nuevos disponibles.
+Se configuró `0 8 * * 1`, los lunes a las 08:00 en America/Guayaquil, como práctica semanal del laboratorio. Al ser stores.csv estático, cada ejecución analiza el mismo archivo hasta que se actualice el archivo del namespace. La programación está configurada; no se declara observada una ejecución automática semanal de Favorita.
 
 Súbelo desde la raíz de tu fork con `bash laboratorios/semana-04-sesion-01/starter/subir_a_kestra.sh psets/proyecto/orquestacion/flow_proyecto.yml` (sin scripts: ya están en la imagen) y ejecútalo manualmente al menos una vez para confirmar que corre sin errores.
 
-Pendiente: construir y subir el flow del proyecto, ejecutarlo y guardar evidencia. La carga posterior del warehouse se hizo sobre el CSV original, no sobre una salida de este pipeline.
+Kestra aceptó la revisión 2 y la estudiante confirmó el resultado correcto. La ejecución mostró 54 filas y 5 columnas: store_nbr, city, state, type y cluster, sin faltantes; sus valores distintos fueron 54, 22, 16, 5 y 17, respectivamente. Se generó y descargó diagnostico_tiendas.csv desde Outputs. Esta salida resume calidad por columna: no es una tabla de tiendas ni una ingesta de ventas. La conexión posterior con el warehouse sigue pendiente y debe respetar ese esquema.
 
 ## Al terminar
 
