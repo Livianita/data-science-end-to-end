@@ -92,19 +92,19 @@ Elige una transformación de pandas que ya escribiste sobre el archivo históric
 
 Reemplaza la ruta del archivo histórico real de tu proyecto.
 
-Pendiente: la plantilla del proyecto conserva TODO y aún no se ha cargado allí un histórico real generado por el pipeline.
+Se implementó [tiendas_spark.py](../../psets/proyecto/procesamiento/tiendas_spark.py) sobre tiendas_pipeline.csv, descargado de Outputs del flow de Favorita en Kestra. Spark leyó 54 filas en una partición. Es una fotografía pequeña del catálogo, no un histórico acumulado que exceda la RAM; ese caso de escala sigue pendiente.
 
 ### Paso 2: reescribe tu transformación (10 minutos)
 
 Con `withColumn()` para la columna calculada y `groupBy().agg()` para la agregación, reproduce exactamente el mismo cálculo que ya hacías con pandas.
 
-Pendiente: escoger y portar una transformación del proyecto. La agregación del catálogo por family ya se conoce de DuckDB, pero no se presenta como un histórico procesado con Spark.
+Se reprodujo el conteo de tiendas por ciudad ya verificado con DuckDB y dbt: groupBy("city").agg(count("*")). La columna city se renombra a ciudad y el resultado se ordena por cantidad descendente y ciudad. Responde dónde se concentra el catálogo de tiendas, no cuánto vende cada ciudad. No se añadió una columna calculada artificial porque esta pregunta solo necesita una agregación.
 
 ### Paso 3: corre el job y compara contra pandas (5 minutos)
 
 Confirma que el resultado de Spark coincide con el resultado que ya conocías de pandas.
 
-Pendiente: ejecutar el job del proyecto y comparar los resultados con una referencia equivalente. El ejercicio 1 compartido sí quedó ejecutado y guardado.
+El job mostró Quito 18, Guayaquil 8, Cuenca 3 y Santo Domingo 3, entre 22 ciudades y 54 tiendas. La comparación automática de todos los conteos con pandas terminó con "Comparacion OK: 22 ciudades, 54 tiendas". El resultado coincide también con DuckDB y dbt. Se guardó la carpeta tiendas_por_ciudad junto al script con CSV y marcador _SUCCESS. collect() solo recoge el resumen; la lectura completa con pandas es apropiada aquí por el tamaño pequeño. Se validó la transformación local; falta aplicarla a un histórico real de gran tamaño para cubrir el objetivo de escala del laboratorio.
 
 ## Antes de la próxima sesión
 
