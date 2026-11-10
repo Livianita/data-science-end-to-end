@@ -27,3 +27,7 @@ El ejercicio 3 de Semana 5, sesión 2 quedó implementado en psets/proyecto/ware
 ## Cierre del ejercicio 2 de dbt (2026-11-08)
 
 Se completo el pendiente de ventas por categoria: id_venta=4 estaba duplicado de forma exacta; SELECT DISTINCT en staging conserva el origen crudo y devuelve 12 ventas. Papeleria paso de 122.0 a 109.5. dbt build: PASS=8, ERROR=0 (cuatro modelos y cuatro pruebas). comprobar.py: cinco TODO en OK. Este resultado reemplaza el estado pendiente de ese ejercicio en las filas historicas anteriores.
+
+## Streaming verificado (2026-11-10)
+
+Semana 6, sesión 2: ejercicio 1 con diez pedidos y conteo hogar 4, ropa 3 y electronica 3; ejercicio 2 con ocho lecturas, dos alertas de techo (31.5 y 33.0) y todas las comprobaciones OK. El ejercicio 3 publicó y consumió cinco actualizaciones ficticias de tiendas: Quito 2, Guayaquil 2 y Cuenca 1. Se documentó batch como decisión para el catálogo estático y streaming como simulación. No se ejecutó la prueba opcional con dos consumidores.
